@@ -13,7 +13,6 @@ on:
 deploy:
     runs-on: ubuntu-latest
 
-# - job: Deploy${{ parameters.resourceType }}
   - deployment: Deploy${{ parameters.resourceType }}
 
   variables:
