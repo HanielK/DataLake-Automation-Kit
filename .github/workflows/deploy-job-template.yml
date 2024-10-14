@@ -6,8 +6,17 @@ parameters:
 - name: resourceGroup
   type: string
 
+on:
+  push:
+    branches: main
+
 jobs:
-- job: Deploy${{ parameters.resourceType }}
+  login:
+    runs-on: ubuntu-latest
+
+# - job: Deploy${{ parameters.resourceType }}
+  - deployment: Deploy${{ parameters.resourceType }}
+
   variables:
     - template: ../Variables.${{ parameters.environmentName }}.yml
   steps:

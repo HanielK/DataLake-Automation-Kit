@@ -19,13 +19,15 @@ parameters:
   default: 'sb' #Enter the environment name for the deployment
 - name: resourceGroup
   type: string
-  default: 'sc-todo-sb-rg' #Enter the resource group name
-- name: aclGroupAdmins
-  type: string
-  default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the admins,Provided value is a default value
-- name: aclGroupUsers
-  type: string
-  default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the users, Provided value is a default value
+  default: 'ps-dw-sb-rg' #Enter the resource group name
+
+# # Remove comments to run when working with Databricks workspace
+# - name: aclGroupAdmins
+#   type: string
+#   default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the admins,Provided value is a default value
+# - name: aclGroupUsers
+#   type: string
+#   default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the users, Provided value is a default value
 #add dry run parameter
 - name: dryRun
   type: boolean
@@ -39,15 +41,15 @@ variables:
   - name: dryRun
     value: ${{ parameters.dryRun }}
 
-stages:
-- stage: DeploylogAnalyticsWorkspace
-  displayName: 'Deploy Log Analytics Workspace'
-  jobs:
-  - template: templates/deploy-job-template.yml
-    parameters:
-      environmentName: ${{ parameters.environmentName }}
-      resourceType: 'log_analytics_workspace'
-      resourceGroup: ${{ parameters.resourceGroup }}
+# stages:
+# - stage: DeploylogAnalyticsWorkspace
+#   displayName: 'Deploy Log Analytics Workspace'
+#   jobs:
+#   - template: templates/deploy-job-template.yml
+#     parameters:
+#       environmentName: ${{ parameters.environmentName }}
+#       resourceType: 'log_analytics_workspace'
+#       resourceGroup: ${{ parameters.resourceGroup }}
 
 - stage: DeployNatGateway
   displayName: 'Deploy Nat Gateway'
@@ -111,15 +113,15 @@ stages:
       resourceGroup: ${{ parameters.resourceGroup }}
   dependsOn: DeployKeyVault
 
-- stage: DeployDataFactory
-  displayName: 'Deploy Data Factory'
-  jobs:
-  - template: templates/deploy-job-template.yml
-    parameters:
-      environmentName: ${{ parameters.environmentName }}
-      resourceType: 'data_factory'
-      resourceGroup: ${{ parameters.resourceGroup }}
-  dependsOn: DeployEventHubNamespace
+# - stage: DeployDataFactory
+#   displayName: 'Deploy Data Factory'
+#   jobs:
+#   - template: templates/deploy-job-template.yml
+#     parameters:
+#       environmentName: ${{ parameters.environmentName }}
+#       resourceType: 'data_factory'
+#       resourceGroup: ${{ parameters.resourceGroup }}
+#   dependsOn: DeployEventHubNamespace
 
 # - stage: DeployEventGridTopic
 #   displayName: 'Deploy Event Grid Topic'
@@ -131,25 +133,25 @@ stages:
 #       resourceGroup: ${{ parameters.resourceGroup }}
 #   dependsOn: DeployEventHubNamespace
 
-- stage: DeployDatabricksWorkspace
-  displayName: 'Deploy Databricks Workspace'
-  jobs:
-  - template: templates/deploy-job-template.yml
-    parameters:
-      environmentName: ${{ parameters.environmentName }}
-      resourceType: 'databricks_workspace'
-      resourceGroup: ${{ parameters.resourceGroup }}
-  dependsOn: DeployDataFactory
+# - stage: DeployDatabricksWorkspace
+#   displayName: 'Deploy Databricks Workspace'
+#   jobs:
+#   - template: templates/deploy-job-template.yml
+#     parameters:
+#       environmentName: ${{ parameters.environmentName }}
+#       resourceType: 'databricks_workspace'
+#       resourceGroup: ${{ parameters.resourceGroup }}
+#   dependsOn: DeployDataFactory
 
-- stage: DeployDataBricksAccessConnector
-  displayName: 'Deploy DataBricks Access Connector'
-  jobs:
-  - template: templates/deploy-job-template.yml
-    parameters:
-      environmentName: ${{ parameters.environmentName }}
-      resourceType: 'databricks_access_connector'
-      resourceGroup: ${{ parameters.resourceGroup }}
-  dependsOn: DeployDatabricksWorkspace
+# - stage: DeployDataBricksAccessConnector
+#   displayName: 'Deploy DataBricks Access Connector'
+#   jobs:
+#   - template: templates/deploy-job-template.yml
+#     parameters:
+#       environmentName: ${{ parameters.environmentName }}
+#       resourceType: 'databricks_access_connector'
+#       resourceGroup: ${{ parameters.resourceGroup }}
+#   dependsOn: DeployDatabricksWorkspace
 
 
 - stage: SendEmailAndWaitForApproval
@@ -170,7 +172,7 @@ stages:
       timeoutInMinutes: 1440 # task times out in 1 day
       inputs:
         notifyUsers: |
-          x2athuma@southernco.com
+          hwaithaka@yahoo.com
         instructions: |
           1.)If we are at this stage, the databricks workspace and the connector have been deployed.
           
