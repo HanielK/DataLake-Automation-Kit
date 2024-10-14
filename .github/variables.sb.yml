@@ -29,3 +29,13 @@ variables:
   #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
   #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   #         enable-AzPSSession: true
+
+#infrastructure configuration
+  - name: resourceGroup
+    value: rg-todo-sb-svcpri-dev
+  - name: resourceType
+    value: todo
+  - name: environmentName
+    value: dev
+  - name: dryRun
+    value: false

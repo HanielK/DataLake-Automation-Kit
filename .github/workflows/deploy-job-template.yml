@@ -1,30 +1,25 @@
-parameters:
-- name: environmentName
-  type: string
-- name: resourceType
-  type: string
-- name: resourceGroup
-  type: string
-
 on:
   push:
     branches: main
 
-deploy:
+jobs:
+
+  deploy:
     runs-on: ubuntu-latest
+    name: Deploy Job
+    env:
+      template: ../Variables.${{ github.event.inputs.environmentName }}.yml
+    steps:
+    - name: checkout sourcecode
+      uses: actions/checkout@v2
+    
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  - deployment: Deploy${{ parameters.resourceType }}
-
-  variables:
-    - template: ../Variables.${{ parameters.environmentName }}.yml
-  steps:
-  - task: AzureCLI@2
-    inputs:
-      connectedServiceNameARM: ${{ variables.Azurelogin }} # for GitHub
-      # connectedServiceNameARM: ${{ variables.azureServiceConnection }} #for DevOps
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
+    - name: Run Azure CLI script
+      run: |
         # Function to add parameters if file exists and is not empty
         add_params_if_exists() {
           if [ -s "$1" ]; then
@@ -42,15 +37,15 @@ deploy:
           cmd+=" create"
         fi
 
-        cmd+=" --resource-group ${{ parameters.resourceGroup }} --template-file common-config/${{ parameters.resourceType }}.bicep"
-        cmd+=" $(add_params_if_exists "environments/${{ parameters.environmentName }}/_parameters.${{ parameters.environmentName }}.json")"
-        cmd+=" $(add_params_if_exists "environments/${{ parameters.environmentName }}/_parameters.${{ parameters.resourceType }}.json")"
-
         # Print the command
         echo "Executing command:"
         echo "$cmd"
 
-        # Execute the command
-        eval $cmd
-    env:
-      DRYRUN: ${{ variables.dryRun }}
+        cmd+=" --resource-group ${{ github.event.inputs.resourceGroup }} --template-file common-config/${{ github.event.inputs.resourceType }}.bicep"
+        cmd+=" $(add_params_if_exists "environments/${{ github.event.inputs.environmentName }}/_parameters.${{ github.event.inputs.environmentName }}.json")"
+        cmd+=" $(add_params_if_exists "environments/${{ github.event.inputs.environmentName }}/_parameters.${{ github.event.inputs.resourceType }}.json")"
+        
+        # Print the command
+        echo "Executing command:"
+        echo "$cmd"
+        DRYRUN: ${{ github.event.inputs.dryRun }}
