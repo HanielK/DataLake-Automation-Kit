@@ -14,7 +14,7 @@ az deployment group create `
     --parameters "./environments/${env}/_parameters.log_analytics_workspace.json" `
     --name "ps-dw-dv-log" `
     --mode Incremental `
-    --what-if
+    # --what-if
 
 
 # **************************************************************************
