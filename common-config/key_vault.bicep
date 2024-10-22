@@ -17,7 +17,7 @@ module namingModule '../modules/naming/main.bicep' = {
   }
 }
 
-module keyVault '../modules/key_vault/main.bicep' = {
+module keyVault '../modules/key-vault/main.bicep' = {
   name: 'keyVaultDeployment'
   params: {
     // Required parameters

@@ -5,8 +5,8 @@
       "org": {
           "value": "ps"
       },
-      "logAnalyticsWorkspaceName": {
-        "value": "log"
+      "name": {
+        "value": "ps-dw-sd-log"
       }
     }
   }
