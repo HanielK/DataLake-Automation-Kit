@@ -41,23 +41,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
 
-      - name: Azure PowerShell action
-        uses: azure/powershell@v2
+      - name: Deploy BICEP Log Analytics Workspace
+        uses: azure/arm-deploy@v1
         with:
-          azPSVersion: latest
-          inlineScript: |
-
-            $env = "sb"
-            $rg = "ps-dw-sb-rg"
-            $sb = ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-            az account set --subscription $sb
-            az account show --output table
-
-            az deployment group create `
-                --resource-group $rg `
-                --template-file "./common-config/log_analytics_workspace.bicep" `
-                --parameters "./environments/${env}/_parameters.${env}.json" `
-                --parameters "./environments/${env}/_parameters.log_analytics_workspace.json" `
-                --name "Deploy BICEP Log Analytics Workspace" `
-                --mode Incremental `
+            subscriptionId: ${{ secrets.sAZURE_SUBSCRIPTION_ID }} #Subscription ID
+            resourceGroupName: 'ps-dw-sb-rg'
+            template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
+            parameters: './environments/sb/_parameters.log_analytics_workspace.json' # Path to your Bicep paramenter file
+            deploymentName: 'bicep-deployment' #Name of the deployment
+            deploymentMode: Incremental
+      
+      #verify deployment
+      - name: Verify Deployment
+        run: |
+          az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
