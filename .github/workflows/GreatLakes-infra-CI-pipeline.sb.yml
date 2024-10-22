@@ -44,9 +44,9 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
 
-      - name: Combine Parameter Files
-        run: |
-          jq -s '.[0] * .[1]' ./environments/sb/_parameters.log_analytics_workspace.json ./environments/sb/_parameters.sb.json > combined_parameters.json
+      # - name: Combine Parameter Files
+      #   run: |
+      #     jq -s '.[0] * .[1]' ./environments/sb/_parameters.log_analytics_workspace.json ./environments/sb/_parameters.sb.json > combined_parameters.json
 
       - name: Deploy BICEP Log Analytics Workspace
         uses: azure/arm-deploy@v1
@@ -55,7 +55,8 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Subscription ID
           resourceGroupName: 'ps-dw-sb-rg'
           template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
-          parameters: combined_parameters.json
+          # parameters: combined_parameters.json
+          parameters: './modules/log_analytics_workspace/main.bicepparam'
           deploymentName: 'bicep-deployment' # Name of the deployment
 
       # Verify deployment
