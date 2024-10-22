@@ -1,124 +1,111 @@
-# **************************************************************************
-#  Notes... deploy resources accodrding to the following sequence
-# **************************************************************************
-# =-> Deploy Log Analytics Workspace
-# =-> Deploy Nat Gateway
-# =-> Deploy Virtual Network
-# =-> Deploy Data Storage Account
-# =-> Deploy Meta Storage Account
-# =-> Deploy Key Vault
-# =-> Deploy Event Hub Namepsace
-# =-> Deploy Data Factory
-# =-> Deploy Databricks Workspace
-# =-> Deploy DataBricks Access Connector
-# ---------------------------------------------------------------------------
-resources:
-  repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/tested
+name: CI Pipeline
 
-stages:
-- stage: Dependancies
-  condition: succeeded()
-  variables:
-    - temaplate: ../variables.${{ parameters.environmentName }}.yml
+# Define the events that trigger the workflow
+# on:
+#   push:
+#     branches:
+#       - main
+#       - tested
+#   pull_request:
+#     branches:
+#       - main
+on:
+  workflow_dispatch:
 
-  jobs:
-    deploy-bicep:
-        Steps:
-        - name: PS_DW_CI_AZ_INFRASTRUCTURE
+jobs:
+  deploy-bicep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Azure Login action
+        uses: azure/login@v2
         with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+      
+      - name: Deploy BICEP Log Analytics Workspace
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.log_analytics_workspace.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
+      
+      - name: Deploy BICEP Nat Gateway
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/network/nat-gateway/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.nat_gateway.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
+      
+      - name: Deploy BICEP Virtual Network
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/storage_account/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.virtual_network.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
 
-        #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Log Analytics Workspace
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.log_analytics_workspace.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment' #Name of the deployment
-            deploymentMode: Incremental
-        
-        #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Nat Gateway
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/modules/network/nat-gateway/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.nat_gateway.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment' #Name of the deployment
-            deploymentMode: Incremental
-        
-        #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Virtual Network
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/storage_account/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.virtual_network.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment'  #Name of the deployment
-            deploymentMode: Incremental
+      - name: Deploy BICEP Data Storage Account
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.storage_account_data.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
+      
+      - name: Deploy BICEP META Storage Account
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/storage_account/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.storage_account_metastore.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
 
-        #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Data Storage Account
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.storage_account_data.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment'  #Name of the deployment
-            deploymentMode: Incremental
+      - name: Deploy BICEP Key Vault
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/key-vault/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.key_vault.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
+
+      - name: Deploy BICEP Databricks Workspace
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: $'ps-dw-sb-rg'
+          template: './modules/databricks/workspace/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.databricks_workspace.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
+
+      - name: Deploy BICEP Databricks Workspace Access Connector
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} #Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/databricks/access-connector/main.bicep' # Path to your Bicep template
+          parameters: './environments/sb/_parameters.databricks_access_connector.json' # Path to your Bicep paramenter file
+          deploymentName: 'bicep-deployment' #Name of the deployment
+          deploymentMode: Incremental
    
-        #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP META Storage Account
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/storage_account/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.storage_account_metastore.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment'  #Name of the deployment
-            deploymentMode: Incremental
-
-        #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Key Vault
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/key-vault/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.key_vault.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment'  #Name of the deployment
-            deploymentMode: Incremental
-
-       #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Databricks Workspace
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/databricks/workspace/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.databricks_workspace.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment'  #Name of the deployment
-            deploymentMode: Incremental
-
-     #Deploy the Bicep Templat using GitHub Actions
-        - name: Deploy BICEP Databricks Workspace Access Connector
-          uses:
-          with:
-            subscriptionid: ${{ secrets.subscriptionId }} #Subscription ID
-            resourceGroup: ../variables.${{ parameters.resourceGroup }}.yml
-            template: './modules/databricks/access-connector/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/ _parameters.databricks_access_connector.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment' #Name of the deployment
-            deploymentMode: Incremental
-   
-   # Verify Deployment
-        - name: Verify Deployment
-          run:
-            az deployment group --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
+      - name: Verify Deployment
+        run: |
+          az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
