@@ -1,7 +1,7 @@
-using './main.bicep'
+using '../log_analytics_workspace/main.bicep'
 
 param name = 'ps-dw-dv-log'
-param location = resourceGroup().location
+param location = 'eastus' 
 param skuName = 'PerGB2018'
 param skuCapacityReservationLevel = 100
 param storageInsightsConfigs = []
