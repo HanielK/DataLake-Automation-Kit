@@ -26,6 +26,7 @@ name: CI Pipeline
 #       - main
 on:
   workflow_dispatch:
+    
 
 jobs:
   deploy-bicep:

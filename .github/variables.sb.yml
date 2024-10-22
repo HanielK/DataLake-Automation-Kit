@@ -3,32 +3,15 @@ variables:
 # Infra Pipeline Configuration
 #------------------------------------------------------------------
 
-#Azure connect (use these variables whe working with Azure DevOps)
-# #Agent Pool Name  
-#   - name: agentPool
-#     value: BuildWSL
+#Agent Pool Name  
+  - name: agentPool
+    value: BuildWSL
   
-# #Azure Service Connection Name
-#   - name: azureServiceConnection
-#     #value: sc-unitycatalog-pr-svcpri-adm
-#     value: sc-todo-sb-svcpri-dev
+#Azure Service Connection Name
+  - name: azureServiceConnection
+    #value: sc-unitycatalog-pr-svcpri-adm
+    value: sc-todo-sb-svcpri-dev
 
-#GitHub connect (use these variables whe working with GitHub actions)
-
-#Azure Login - own Account
-  - name: Azurelogin
-    uses: azure/login@v1
-    with:
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-#Azure Login - Enterprise Account
-  #  - name: Azure login
-  #       uses: azure/login@v2
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  #         enable-AzPSSession: true
 
 #infrastructure configuration
   - name: resourceGroup
