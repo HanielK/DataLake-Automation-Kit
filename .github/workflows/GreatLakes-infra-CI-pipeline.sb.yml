@@ -17,12 +17,14 @@ name: CI Pipeline
 
 # Define the events that trigger the workflow
 # on:
+#   # Set your workflow to run on push events to the develop and all feature branches
 #   push:
 #     branches:
-#       - main
-#       - tested
+#       - develop
+#       - feature/*
+#   # Set your workflow to run on pull request events that target the main branch
 #   pull_request:
-#     branches:
+#     branches: 
 #       - main
 on:
   workflow_dispatch:
@@ -45,13 +47,16 @@ jobs:
       - name: Deploy BICEP Log Analytics Workspace
         uses: azure/arm-deploy@v1
         with:
-            subscriptionId: ${{ secrets.sAZURE_SUBSCRIPTION_ID }} #Subscription ID
-            resourceGroupName: 'ps-dw-sb-rg'
-            template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
-            parameters: './environments/sb/_parameters.log_analytics_workspace.json' # Path to your Bicep paramenter file
-            deploymentName: 'bicep-deployment' #Name of the deployment
-      
-      #verify deployment
+          scope: resourceGroup
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Subscription ID
+          resourceGroupName: 'ps-dw-sb-rg'
+          template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
+          parameters: |
+            ./environments/sb/_parameters.log_analytics_workspace.json
+            ./environments/sb/_parameters.sb.json
+          deploymentName: 'bicep-deployment' # Name of the deployment
+
+      # Verify deployment
       - name: Verify Deployment
         run: |
           az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
