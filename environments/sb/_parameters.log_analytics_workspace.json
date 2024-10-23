@@ -1,66 +1,9 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "org": {
-          "value": "ps"
-      },
-      "name": {
-        "value": "ps-dw-sd-log"
-      },
-      "location": {
-        "value": "eastus" 
-      },
-      "skuName": {
-        "value": "PerGB2018"
-      },
-      "skuCapacityReservationLevel": {
-        "value": 100
-      },
-      "storageInsightsConfigs": {
-        "value": []
-      },
-      "linkedServices": {
-        "value": []
-      },
-      "linkedStorageAccounts": {
-        "value": []
-      },
-      "savedSearches": {
-        "value": []
-      },
-      "dataExports": {
-        "value": []
-      },
-      "dataSources": {
-        "value": []
-      },
-      "tables": {
-        "value": []
-      },
-      "gallerySolutions": {
-        "value": []
-      },
-      "dataRetention": {
-        "value": 365
-      },
-      "dailyQuotaGb": {
-        "value": -1
-      },
-      "publicNetworkAccessForIngestion": {
-        "value": "Enabled"
-      },
-      "publicNetworkAccessForQuery": {
-        "value": "Enabled"
-      },
-      "useResourcePermissions": {
-        "value": false
-      },
-      "forceCmkForQuery": {
-        "value": true
-      },
-      "enableTelemetry": {
-        "value": true
-      }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "org": {
+        "value": "sc"
     }
   }
+}

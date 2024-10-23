@@ -13,7 +13,7 @@
 # =-> Deploy DataBricks Access Connector
 # ---------------------------------------------------------------------------
 
-name: CI Pipeline
+# name: CI Pipeline
 
 # Define the events that trigger the workflow
 # on:
@@ -26,39 +26,73 @@ name: CI Pipeline
 #   pull_request:
 #     branches: 
 #       - main
+
+
+name: Run Azure Login With a Service Principal Secret
+
 on:
-  workflow_dispatch:
-    
+  workflow_dispatch: 
 
 jobs:
-  deploy-bicep:
+
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v1
 
-      - name: Azure Login action
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true
+    - uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Combine Parameter Files
-        run: |
-          jq -s '.[0] * .[1]' ./environments/sb/_parameters.log_analytics_workspace.json ./environments/sb/_parameters.sb.json > combined_parameters.json
-
-      - name: Deploy BICEP Log Analytics Workspace
-        uses: azure/arm-deploy@v1
-        with:
-          scope: resourcegroup
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Subscription ID
-          resourceGroupName: 'ps-dw-sb-rg'
-          template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
-          parameters: combined_parameters.json
-          deploymentName: 'bicep-deployment' # Name of the deployment
-
-      # Verify deployment
-      - name: Verify Deployment
-        run: |
+    - name: Azure CLI script
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          $env = "sb"
+          $rg = "ps-dw-sb-rg"
+          $sb = "4280aaac-7665-42a5-9a8c-5af0590c5c52"
+          az account set --subscription $sb
+          az account show --output table
+          az deployment group create `
+            --resource-group $rg `
+            --template-file "./common-config/log_analytics_workspace.bicep" `
+            --parameters "./environments/${env}/_parameters.${env}.json" `
+            --parameters "./environments/${env}/_parameters.log_analytics_workspace.json" `
+            --name "ps-dw-dv-log" `
+            --mode Incremental `
+          
+    # Verify deployment
+    - name: Verify Deployment
+      run: |
           az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
+
+  # steps:
+    #   - name: Checkout repository
+    #     uses: actions/checkout@v1
+
+    #   - name: Azure Login action
+    #     uses: azure/login@v1
+    #     with:
+    #       creds: ${{ secrets.AZURE_CREDENTIALS }}
+    #       enable-AzPSSession: true
+
+    #   # - name: Combine Parameter Files
+      #   run: |
+      #     jq -s '.[0] * .[1]' ./environments/sb/_parameters.log_analytics_workspace.json ./environments/sb/_parameters.sb.json > combined_parameters.json
+
+      # - name: Deploy BICEP Log Analytics Workspace
+      #   uses: azure/arm-deploy@v1
+      #   with:
+      #     scope: resourcegroup
+      #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Subscription ID
+      #     resourceGroupName: 'ps-dw-sb-rg'
+      #     template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
+      #     parameters: combined_parameters.json
+      #     deploymentName: 'bicep-deployment' # Name of the deployment
+
+      
+
+      # # Verify deployment
+      # - name: Verify Deployment
+      #   run: |
+      #     az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
