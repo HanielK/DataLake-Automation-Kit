@@ -3,7 +3,7 @@ metadata description = 'This module deploys a Log Analytics Workspace.'
 metadata owner = 'Azure/module-maintainers'
 
 @description('Required. Name of the Log Analytics workspace.')
-param name string 
+param name string
 
 @description('Optional. Location for all resources.')
 param location string = resourceGroup().location
@@ -226,7 +226,7 @@ module logAnalyticsWorkspace_storageInsightConfigs 'storage-insight-config/main.
   for (storageInsightsConfig, index) in storageInsightsConfigs: {
     name: '${uniqueString(deployment().name, location)}-LAW-StorageInsightsConfig-${index}'
     params: {
-      logAnalyticsWorkspaceName: name
+      logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
       containers: contains(storageInsightsConfig, 'containers') ? storageInsightsConfig.containers : []
       tables: contains(storageInsightsConfig, 'tables') ? storageInsightsConfig.tables : []
       storageAccountResourceId: storageInsightsConfig.storageAccountResourceId
@@ -238,7 +238,7 @@ module logAnalyticsWorkspace_linkedServices 'linked-service/main.bicep' = [
   for (linkedService, index) in linkedServices: {
     name: '${uniqueString(deployment().name, location)}-LAW-LinkedService-${index}'
     params: {
-      logAnalyticsWorkspaceName: name
+      logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
       name: linkedService.name
       resourceId: contains(linkedService, 'resourceId') ? linkedService.resourceId : ''
       writeAccessResourceId: contains(linkedService, 'writeAccessResourceId') ? linkedService.writeAccessResourceId : ''
@@ -250,7 +250,7 @@ module logAnalyticsWorkspace_linkedStorageAccounts 'linked-storage-account/main.
   for (linkedStorageAccount, index) in linkedStorageAccounts: {
     name: '${uniqueString(deployment().name, location)}-LAW-LinkedStorageAccount-${index}'
     params: {
-      logAnalyticsWorkspaceName: name
+      logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
       name: linkedStorageAccount.name
       resourceId: linkedStorageAccount.resourceId
     }
@@ -261,7 +261,7 @@ module logAnalyticsWorkspace_savedSearches 'saved-search/main.bicep' = [
   for (savedSearch, index) in savedSearches: {
     name: '${uniqueString(deployment().name, location)}-LAW-SavedSearch-${index}'
     params: {
-      logAnalyticsWorkspaceName: name
+      logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
       name: '${savedSearch.name}${uniqueString(deployment().name)}'
       etag: savedSearch.?etag
       displayName: savedSearch.displayName
@@ -281,7 +281,7 @@ module logAnalyticsWorkspace_dataExports 'data-export/main.bicep' = [
   for (dataExport, index) in dataExports: {
     name: '${uniqueString(deployment().name, location)}-LAW-DataExport-${index}'
     params: {
-      workspaceName: name
+      workspaceName: logAnalyticsWorkspace.name
       name: dataExport.name
       destination: contains(dataExport, 'destination') ? dataExport.destination : {}
       enable: contains(dataExport, 'enable') ? dataExport.enable : false
@@ -294,7 +294,7 @@ module logAnalyticsWorkspace_dataSources 'data-source/main.bicep' = [
   for (dataSource, index) in dataSources: {
     name: '${uniqueString(deployment().name, location)}-LAW-DataSource-${index}'
     params: {
-      logAnalyticsWorkspaceName: name
+      logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
       name: dataSource.name
       kind: dataSource.kind
       linkedResourceId: contains(dataSource, 'linkedResourceId') ? dataSource.linkedResourceId : ''
@@ -316,7 +316,7 @@ module logAnalyticsWorkspace_tables 'table/main.bicep' = [
   for (table, index) in tables: {
     name: '${uniqueString(deployment().name, location)}-LAW-Table-${index}'
     params: {
-      workspaceName: name
+      workspaceName: logAnalyticsWorkspace.name
       name: table.name
       plan: table.?plan
       schema: table.?schema
@@ -335,7 +335,7 @@ module logAnalyticsWorkspace_solutions 'br/public:avm/res/operations-management/
     params: {
       name: gallerySolution.name
       location: location
-      logAnalyticsWorkspaceName: name
+      logAnalyticsWorkspaceName: logAnalyticsWorkspace.name
       product: contains(gallerySolution, 'product') ? gallerySolution.product : 'OMSGallery'
       publisher: contains(gallerySolution, 'publisher') ? gallerySolution.publisher : 'Microsoft'
       enableTelemetry: gallerySolution.?enableTelemetry ?? enableTelemetry
