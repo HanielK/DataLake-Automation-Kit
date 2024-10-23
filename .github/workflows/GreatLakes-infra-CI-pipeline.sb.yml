@@ -55,7 +55,7 @@ jobs:
             --template-file "./common-config/log_analytics_workspace.bicep" `
             --parameters "./environments/sb/_parameters.sb.json" `
             --parameters "./environments/sb/_parameters.log_analytics_workspace.json" `
-            --name "ps-dw-dv-log" `
+            --name ps-dw-dv-log `
             --mode Incremental `
           
   # # Verify deployment
