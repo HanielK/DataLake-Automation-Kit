@@ -46,7 +46,7 @@ jobs:
     - name: Deploy BICEP Log Analytics Workspace
       uses: azure/cli@v2
       with:
-        azcliversion: 2.63.0.
+        azcliversion: 2.63.0
         inlineScript: |
    
           az account show --output table
