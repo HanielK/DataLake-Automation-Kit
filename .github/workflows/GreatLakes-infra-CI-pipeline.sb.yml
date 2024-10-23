@@ -59,7 +59,21 @@ jobs:
             --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
             --name ps-dw-dv-log \
             --mode Incremental
-          
+
+    - name: Deploy BICEP Nat Gateway
+      uses: azure/cli@v2
+      with:
+        azcliversion: 2.63.0
+        inlineScript: |
+          az deployment group create \
+          --resource-group ps-dw-sb-rg \
+          --template-file "./common-config/nat_gateway.bicep" \
+          --parameters "./environments/sb/_parameters.sb.json" \
+          --parameters "./environments/sb/_parameters.nat_gateway.json" \
+          --name ps-dw-dv-nat \
+          --mode Incremental
+
+ 
   # # Verify deployment
     
   # - name: Verify Deployment  common-config\log_analytics_workspace.bicep
