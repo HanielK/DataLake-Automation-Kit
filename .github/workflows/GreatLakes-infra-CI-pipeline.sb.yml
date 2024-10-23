@@ -45,68 +45,112 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # - name: Deploy BICEP Log Analytics Workspace
-    #   uses: azure/cli@v2
-    #   with:
-    #     azcliversion: 2.63.0
-    #     inlineScript: |
-   
-    #       az account show --output table
-    #       az deployment group create \
-    #         --resource-group ps-dw-sb-rg \
-    #         --template-file "./common-config/log_analytics_workspace.bicep" \
-    #         --parameters "./environments/sb/_parameters.sb.json" \
-    #         --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
-    #         --name ps-dw-dv-log \
-    #         --mode Incremental
-
+    - name: Deploy BICEP Log Analytics Workspace
+      uses: azure/cli@v2
+      with:
+        azcliversion: 2.63.0
+        inlineScript: |   
+            az account show --output table
+            az deployment group create \
+              --resource-group ps-dw-dv-rg \
+              --template-file "./lakehouse/common-config/log_analytics_workspace.bicep" \
+              --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+              --parameters "./lakehouse/environments/dv/_parameters.log_analytics_workspace.json" \
+              --name ps-dw-dv-log \
+              --mode Incremental
+  
     - name: Deploy BICEP Nat Gateway
       uses: azure/cli@v2
       with:
         azcliversion: 2.63.0
         inlineScript: |
-          az deployment group create \
-          --resource-group ps-dw-sb-rg \
-          --template-file "./common-config/nat_gateway.bicep" \
-          --parameters "./environments/sb/_parameters.sb.json" \
-          --parameters "./environments/sb/_parameters.nat_gateway.json" \
-          --name ps-dw-dv-nat \
-          --mode Incremental
-
- 
-  # # Verify deployment
+            az account show --output table
+            az deployment group create \
+              --resource-group ps-dw-dv-rg \
+              --template-file "./lakehouse/common-config/nat_gateway.bicep" \
+              --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+              --parameters "./lakehouse/environments/dv/_parameters.nat_gateway.json" \
+              --name ps-dw-dv-nat \
+              --mode Incremental
+  
+    - name: Deploy Virtual Network
+      uses: azure/cli@v2
+      with:
+        azcliversion: 2.63.0
+        inlineScript: |
+            az account show --output table
+            az deployment group create \
+              --resource-group ps-dw-dv-rg \
+              --template-file "./lakehouse/common-config/virtual_network.bicep" \
+              --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+              --parameters "./lakehouse/environments/dv/_parameters.virtual_network.json" \
+              --name ps-dw-dv-vnet \
+              --mode Incremental
     
-  # - name: Verify Deployment  common-config\log_analytics_workspace.bicep
-  #   run: |
-  #       az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
-
-  # steps:
-    #   - name: Checkout repository
-    #     uses: actions/checkout@v1
-
-    #   - name: Azure Login action
-    #     uses: azure/login@v1
-    #     with:
-    #       creds: ${{ secrets.AZURE_CREDENTIALS }}
-    #       enable-AzPSSession: true
-
-    #   # - name: Combine Parameter Files
-      #   run: |
-      #     jq -s '.[0] * .[1]' ./environments/sb/_parameters.log_analytics_workspace.json ./environments/sb/_parameters.sb.json > combined_parameters.json
-
-      # - name: Deploy BICEP Log Analytics Workspace
-      #   uses: azure/arm-deploy@v1
-      #   with:
-      #     scope: resourcegroup
-      #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }} # Subscription ID
-      #     resourceGroupName: 'ps-dw-sb-rg'
-      #     template: './modules/log_analytics_solution/main.bicep' # Path to your Bicep template
-      #     parameters: combined_parameters.json
-      #     deploymentName: 'bicep-deployment' # Name of the deployment
-
-      
-
-      # # Verify deployment
-      # - name: Verify Deployment
-      #   run: |
-      #     az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
+    - name: Deploy Data Storage Account
+      uses: azure/cli@v2
+      with:
+        azcliversion: 2.63.0
+        inlineScript: |
+            az account show --output table
+            az deployment group create \
+              --resource-group ps-dw-dv-rg \
+              --template-file "./lakehouse/common-config/storage_account_data.bicep" \
+              --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+              --parameters "./lakehouse/environments/dv/_parameters.storage_account_data.json" \
+              --name psdwdvstordata \
+              --mode Incremental
+    
+    - name: Deploy Meta Storage Account
+      uses: azure/cli@v2
+      with:
+        azcliversion: 2.63.0
+        inlineScript: |
+            az account show --output table
+            az deployment group create \
+              --resource-group ps-dw-dv-rg \
+              --template-file "./lakehouse/common-config/storage_account_metastore.bicep" \
+              --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+              --parameters "./lakehouse/environments/dv/_parameters.storage_account_metastore.json" \
+              --name psdwdvstormeta \
+              --mode Incremental
+    
+    # - name: Deploy Key Vault
+    #         uses: azure/cli@v2
+    #         with:
+    #           azcliversion: 2.63.0
+    #           inlineScript: |
+    #             az deployment group create \
+    #             --resource-group ps-dw-dv-rg \
+    #             --template-file "./lakehouse/common-config/key_vault.bicep" \
+    #             --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+    #             --parameters "./lakehouse/environments/dv/_parameters.key_vault.json" \
+    #             --name ps-dw-dv-kv \
+    #             --mode Incremental
+  
+    # - name: Deploy Databricks Workspace
+    #         uses: azure/cli@v2
+    #         with:
+    #           azcliversion: 2.63.0
+    #           inlineScript: |
+    #             az deployment group create \
+    #             --resource-group ps-dw-dv-rg \
+    #             --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
+    #             --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+    #             --parameters "./lakehouse/environments/dv/_parameters.databricks_workspace.json" \
+    #             --name pps-dw-dv-dbx \
+    #             --mode Incremental
+  
+    # - name: DataBricks Access Connector
+    #         uses: azure/cli@v2
+    #         with:
+    #           azcliversion: 2.63.0
+    #           inlineScript: |
+    #             az deployment group create \
+    #             --resource-group ps-dw-dv-rg \
+    #             --template-file "./lakehouse/common-config/databricks_access_connector.bicep" \
+    #             --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+    #             --parameters "./lakehouse/environments/dv/_parameters.databricks_access_connector.json" \
+    #             --name ps-dw-dv-conn-dbx \
+    #             --mode Incremental
+  
