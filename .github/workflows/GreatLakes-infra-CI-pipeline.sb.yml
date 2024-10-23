@@ -45,20 +45,20 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy BICEP Log Analytics Workspace
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
+    # - name: Deploy BICEP Log Analytics Workspace
+    #   uses: azure/cli@v2
+    #   with:
+    #     azcliversion: 2.63.0
+    #     inlineScript: |
    
-          az account show --output table
-          az deployment group create \
-            --resource-group ps-dw-sb-rg \
-            --template-file "./common-config/log_analytics_workspace.bicep" \
-            --parameters "./environments/sb/_parameters.sb.json" \
-            --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
-            --name ps-dw-dv-log \
-            --mode Incremental
+    #       az account show --output table
+    #       az deployment group create \
+    #         --resource-group ps-dw-sb-rg \
+    #         --template-file "./common-config/log_analytics_workspace.bicep" \
+    #         --parameters "./environments/sb/_parameters.sb.json" \
+    #         --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
+    #         --name ps-dw-dv-log \
+    #         --mode Incremental
 
     - name: Deploy BICEP Nat Gateway
       uses: azure/cli@v2
