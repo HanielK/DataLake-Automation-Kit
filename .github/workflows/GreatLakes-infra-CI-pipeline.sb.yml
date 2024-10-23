@@ -38,6 +38,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v1
 
     - uses: azure/login@v2
       with:
@@ -60,7 +62,7 @@ jobs:
           
   # # Verify deployment
     
-  # - name: Verify Deployment
+  # - name: Verify Deployment  common-config\log_analytics_workspace.bicep
   #   run: |
   #       az deployment group show --name bicep-deployment --resource-group ps-dw-dv-rg --query properties.outputs --output table
 
