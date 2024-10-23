@@ -50,13 +50,13 @@ jobs:
         inlineScript: |
    
           az account show --output table
-          az deployment group create `
-            --resource-group ps-dw-sb-rg `
-            --template-file "./common-config/log_analytics_workspace.bicep" `
-            --parameters "./environments/sb/_parameters.sb.json" `
-            --parameters "./environments/sb/_parameters.log_analytics_workspace.json" `
-            --name ps-dw-dv-log `
-            --mode Incremental `
+          az deployment group create \
+            --resource-group ps-dw-sb-rg \
+            --template-file "./common-config/log_analytics_workspace.bicep" \
+            --parameters "./environments/sb/_parameters.sb.json" \
+            --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
+            --name ps-dw-dv-log \
+            --mode Incremental
           
   # # Verify deployment
     
