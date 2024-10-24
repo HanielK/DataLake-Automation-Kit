@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vnetAddressPrefix": {
-      "value": "10.251.0.0/20"
+      "value": "10.255.0.0/20"
     },
     "natGatewayName": {
       "value": "nat"
@@ -12,7 +12,7 @@
       "value": [
         {
           "name": "sub-default",
-          "addressPrefix": "10.251.0.0/23",
+          "addressPrefix": "10.255.0.0/23",
           "delegations": [],
           "networkSecurityGroupName": "nsg-default",
           "natGatewayEnabled": true,
@@ -28,24 +28,12 @@
               "locations": [
                 "*"
               ]
-            },
-            {
-              "service": "Microsoft.CognitiveServices",
-              "locations": [
-                "*"
-              ]
-            },
-            {
-              "service": "Microsoft.EventHub",
-              "locations": [
-                "*"
-              ]
             }
           ]
         },
         {
           "name": "sub-dbx-pub",
-          "addressPrefix": "10.251.2.0/23",
+          "addressPrefix": "10.255.2.0/23",
           "delegations": [
             {
               "name": "Microsoft.Databricks/workspaces",
@@ -69,24 +57,12 @@
               "locations": [
                 "*"
               ]
-            },
-            {
-              "service": "Microsoft.CognitiveServices",
-              "locations": [
-                "*"
-              ]
-            },
-            {
-              "service": "Microsoft.EventHub",
-              "locations": [
-                "*"
-              ]
             }
           ]
         },
         {
           "name": "sub-dbx-priv",
-          "addressPrefix": "10.251.4.0/22",
+          "addressPrefix": "10.255.4.0/23",
           "delegations": [
             {
               "name": "Microsoft.Databricks/workspaces",
@@ -106,18 +82,6 @@
             },
             {
               "service": "Microsoft.KeyVault",
-              "locations": [
-                "*"
-              ]
-            },
-            {
-              "service": "Microsoft.CognitiveServices",
-              "locations": [
-                "*"
-              ]
-            },
-            {
-              "service": "Microsoft.EventHub",
               "locations": [
                 "*"
               ]

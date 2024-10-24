@@ -11,24 +11,3 @@ variables:
   - name: azureServiceConnection
     #value: sc-unitycatalog-pr-svcpri-adm
     value: sc-todo-sb-svcpri-dev
-
-
-
-# variables:
-parameters:
-- name: environmentName
-  type: string
-  default: 'sb' #Enter the environment name for the deployment
-- name: resourceGroup
-  type: string
-  default: 'ps-dw-dv-rg' #Enter the resource group name
-- name: aclGroupAdmins
-  type: string
-  default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the admins,Provided value is a default value
-- name: aclGroupUsers
-  type: string
-  default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the users, Provided value is a default value
-#add dry run parameter
-- name: dryRun
-  type: boolean
-  default: false
