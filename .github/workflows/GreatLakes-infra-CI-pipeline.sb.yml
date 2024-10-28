@@ -9,8 +9,8 @@
 # =-> Deploy Key Vault
 # =-> Deploy Event Hub Namepsace
 # =-> Deploy Data Factory
-# =-> Deploy Databricks Workspace
-# =-> Deploy DataBricks Access Connector
+# =-> Deploy Databricks Workspace - Seperarate Workflow
+# =-> Deploy DataBricks Access Connector - Seperarate Workflow
 # ---------------------------------------------------------------------------
 
 # name: CI Pipeline
@@ -28,7 +28,7 @@
 #       - main
 
 
-name: CI Pipeline
+name: Deploy Infrastructure
 
 on:
   workflow_dispatch: 
