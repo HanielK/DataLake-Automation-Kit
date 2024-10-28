@@ -9,8 +9,8 @@
 # =-> Deploy Key Vault
 # =-> Deploy Event Hub Namepsace
 # =-> Deploy Data Factory
-# =-> Deploy Databricks Workspace
-# =-> Deploy DataBricks Access Connector
+# =-> Deploy Databricks Workspace - Seperarate Workflow
+# =-> Deploy DataBricks Access Connector - Seperarate Workflow
 # ---------------------------------------------------------------------------
 
 # name: CI Pipeline
@@ -28,7 +28,7 @@
 #       - main
 
 
-name: CI Pipeline
+name: Deploy Infrastructure
 
 on:
   workflow_dispatch: 
@@ -129,31 +129,34 @@ jobs:
               --name ps-dw-dv-kv \
               --mode Incremental
         
-    - name: Deploy Databricks Workspace
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-            az account show --output table
-            az deployment group create \
-              --resource-group ps-dw-dv-rg \
-              --template-file "./common-config/databricks_workspace.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.databricks_workspace.json" \
-              --name pps-dw-dv-dbx \
-              --mode Incremental
-        
-    - name: DataBricks Access Connector
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-            az account show --output table
-            az deployment group create \
-              --resource-group ps-dw-dv-rg \
-              --template-file "./common-config/databricks_access_connector.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.databricks_access_connector.json" \
-              --name ps-dw-dv-conn-dbx \
-              --mode Incremental
-            
+
+# **********************************************************************************************************
+#  Note...Seperate yml (ps-dw-dbx-wrkspace-cli-infra.)  to deploy databrcicks workspaces/ access connectors
+# **********************************************************************************************************
+    # - name: Deploy Databricks Workspace
+    #   uses: azure/cli@v2
+    #   with:
+    #     azcliversion: 2.63.0
+    #     inlineScript: |
+    #       az account show --output table
+    #       az deployment group create \
+    #         --resource-group ps-dw-dv-rg \
+    #         --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
+    #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+    #         --parameters "./lakehouse/environments/dv/_parameters.databricks_workspace.json" \
+    #         --name pps-dw-dv-dbx \
+    #         --mode Incremental
+
+    # - name: DataBricks Access Connector
+    #   uses: azure/cli@v2
+    #   with:
+    #     azcliversion: 2.63.0
+    #     inlineScript: |
+    #       az account show --output table
+    #       az deployment group create \
+    #         --resource-group ps-dw-dv-rg \
+    #         --template-file "./lakehouse/common-config/databricks_access_connector.bicep" \
+    #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+    #         --parameters "./lakehouse/environments/dv/_parameters.databricks_access_connector.json" \
+    #         --name ps-dw-dv-conn-dbx \
+    #         --mode Incremental
