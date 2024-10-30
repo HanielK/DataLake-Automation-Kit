@@ -52,11 +52,11 @@ jobs:
         inlineScript: |   
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-dv-rg \
+              --resource-group ps-dw-sb-rg \
               --template-file "./common-config/log_analytics_workspace.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.log_analytics_workspace.json" \
-              --name ps-dw-dv-log \
+              --parameters "./environments/sb/_parameters.sb.json" \
+              --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
+              --name ps-dw-sb-log \
               --mode Incremental
   
     - name: Deploy BICEP Nat Gateway
@@ -66,11 +66,11 @@ jobs:
         inlineScript: |
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-dv-rg \
+              --resource-group ps-dw-sb-rg \
               --template-file "./common-config/nat_gateway.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.nat_gateway.json" \
-              --name ps-dw-dv-nat \
+              --parameters "./environments//_sbparameters.sb.json" \
+              --parameters "./environments/sb/_parameters.nat_gateway.json" \
+              --name ps-dw-sb-nat \
               --mode Incremental
   
     - name: Deploy Virtual Network
@@ -80,11 +80,11 @@ jobs:
         inlineScript: |
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-dv-rg \
+              --resource-group ps-dw-sb-rg \
               --template-file "./common-config/virtual_network.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.virtual_network.json" \
-              --name ps-dw-dv-vnet \
+              --parameters "./environments/sb/_parameters.sb.json" \
+              --parameters "./environments/sb/_parameters.virtual_network.json" \
+              --name ps-dw-sb-vnet \
               --mode Incremental
     
     - name: Deploy Data Storage Account
@@ -94,11 +94,11 @@ jobs:
         inlineScript: |
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-dv-rg \
+              --resource-group ps-dw-sb-rg \
               --template-file "./common-config/storage_account_data.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.storage_account_data.json" \
-              --name psdwdvstordata \
+              --parameters "./environments/sb/_parameters.sb.json" \
+              --parameters "./environments/sb/_parameters.storage_account_data.json" \
+              --name psdwsbstordata \
               --mode Incremental
     
     - name: Deploy Meta Storage Account
@@ -108,11 +108,11 @@ jobs:
         inlineScript: |
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-dv-rg \
+              --resource-group ps-dw-sb-rg \
               --template-file "./common-config/storage_account_metastore.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.storage_account_metastore.json" \
-              --name psdwdvstormeta \
+              --parameters "./environments/sb/_parameters.sb.json" \
+              --parameters "./environments/sb/_parameters.storage_account_metastore.json" \
+              --name psdwsbstormeta \
               --mode Incremental
     
     - name: Deploy Key Vault
@@ -122,11 +122,11 @@ jobs:
         inlineScript: |
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-dv-rg \
+              --resource-group ps-dw-sb-rg \
               --template-file "./common-config/key_vault.bicep" \
-              --parameters "./environments/dv/_parameters.dv.json" \
-              --parameters "./environments/dv/_parameters.key_vault.json" \
-              --name ps-dw-dv-kv \
+              --parameters "./environments/sb/_parameters.sb.json" \
+              --parameters "./environments/sb/_parameters.key_vault.json" \
+              --name ps-dw-sb-kv \
               --mode Incremental
         
 
@@ -140,11 +140,11 @@ jobs:
     #     inlineScript: |
     #       az account show --output table
     #       az deployment group create \
-    #         --resource-group ps-dw-dv-rg \
+    #         --resource-group ps-dw-sb-rg \
     #         --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
-    #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
-    #         --parameters "./lakehouse/environments/dv/_parameters.databricks_workspace.json" \
-    #         --name pps-dw-dv-dbx \
+    #         --parameters "./lakehouse/environments/sb/_parameters.sb.json" \
+    #         --parameters "./lakehouse/environments/sb/_parameters.databricks_workspace.json" \
+    #         --name pps-dw-sb-dbx \
     #         --mode Incremental
 
     # - name: DataBricks Access Connector
@@ -154,9 +154,9 @@ jobs:
     #     inlineScript: |
     #       az account show --output table
     #       az deployment group create \
-    #         --resource-group ps-dw-dv-rg \
+    #         --resource-group ps-dw-sb-rg \
     #         --template-file "./lakehouse/common-config/databricks_access_connector.bicep" \
-    #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
-    #         --parameters "./lakehouse/environments/dv/_parameters.databricks_access_connector.json" \
-    #         --name ps-dw-dv-conn-dbx \
+    #         --parameters "./lakehouse/environments/sb/_parameters.sb.json" \
+    #         --parameters "./lakehouse/environments/sb/_parameters.databricks_access_connector.json" \
+    #         --name ps-dw-sb-conn-dbx \
     #         --mode Incremental

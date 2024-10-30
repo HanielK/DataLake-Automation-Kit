@@ -1,6 +1,6 @@
 # *******************************************************************************************
 #  Note... deploy resources accodrding to the following sequence
-#  Note... seperate yml (ps-dw-dv-az-resources-cli-infra.)  to deploy First 8 resources
+#  Note... seperate yml (ps-dw-sb-az-resources-cli-infra.)  to deploy First 8 resources
 # *******************************************************************************************
 # =-> Deploy Log Analytics Workspace
 # =-> Deploy Nat Gateway
@@ -53,26 +53,26 @@ jobs:
         inlineScript: |   
           az account show --output table
           az deployment group create \
-            --resource-group ps-dw-dv-rg \
-            --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
-            --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
-            --parameters "./lakehouse/environments/dv/_parameters.databricks_workspace.json" \
-            --name ps-dw-dv-dbx \
+            --resource-group ps-dw-sb-rg \
+            --template-file "./common-config/databricks_workspace.bicep" \
+            --parameters "./environments/sb/_parameters.sb.json" \
+            --parameters "./environments/sb/_parameters.databricks_workspace.json" \
+            --name ps-dw-sb-dbx \
             --mode Incremental
 
-    - name: Deploy UA Databricks Workspace
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-          az account show --output table
-          az deployment group create \
-            --resource-group ps-dw-ua-rg \
-            --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
-            --parameters "./lakehouse/environments/ua/_parameters.ua.json" \
-            --parameters "./lakehouse/environments/ua/_parameters.databricks_workspace.json" \
-            --name ps-dw-ua-dbx \
-            --mode Incremental
+    # - name: Deploy UA Databricks Workspace
+    #   uses: azure/cli@v2
+    #   with:
+    #     azcliversion: 2.63.0
+    #     inlineScript: |
+    #       az account show --output table
+    #       az deployment group create \
+    #         --resource-group ps-dw-ua-rg \
+    #         --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
+    #         --parameters "./lakehouse/environments/ua/_parameters.ua.json" \
+    #         --parameters "./lakehouse/environments/ua/_parameters.databricks_workspace.json" \
+    #         --name ps-dw-ua-dbx \
+    #         --mode Incremental
 
     # - name: Deploy PROD Databricks Workspace
     #   uses: azure/cli@v2
@@ -83,8 +83,8 @@ jobs:
     #       az deployment group create \
     #         --resource-group ps-dw-pr-rg \
     #         --template-file "./lakehouse/common-config/databricks_workspace.bicep" \
-    #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
-    #         --parameters "./lakehouse/environments/dv/_parameters.databricks_workspace.json" \
+    #         --parameters "./lakehouse/environments/sb/_parameters.sb.json" \
+    #         --parameters "./lakehouse/environments/sb/_parameters.databricks_workspace.json" \
     #         --name ps-dw-pr-dbx \
     #         --mode Incremental
 
@@ -96,26 +96,26 @@ jobs:
         inlineScript: |
           az account show --output table
           az deployment group create \
-            --resource-group ps-dw-dv-rg \
-            --template-file "./lakehouse/common-config/databricks_access_connector.bicep" \
-            --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
-            --parameters "./lakehouse/environments/dv/_parameters.databricks_access_connector.json" \
-            --name ps-dw-dv-conn-dbx \
+            --resource-group ps-dw-sb-rg \
+            --template-file "./common-config/databricks_access_connector.bicep" \
+            --parameters "./lenvironments/sb/_parameters.sb.json" \
+            --parameters "./environments/sb/_parameters.databricks_access_connector.json" \
+            --name ps-dw-sb-conn-dbx \
                 --mode Incremental
 
-    - name: DataBricks UA Access Connector
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-          az account show --output table
-          az deployment group create \
-            --resource-group ps-dw-ua-rg \
-            --template-file "./lakehouse/common-config/databricks_access_connector.bicep" \
-            --parameters "./lakehouse/environments/ua/_parameters.dv.json" \
-            --parameters "./lakehouse/environments/ua/_parameters.databricks_access_connector.json" \
-            --name ps-dw-ua-conn-dbx \
-            --mode Incremental
+    # - name: DataBricks UA Access Connector
+    #   uses: azure/cli@v2
+    #   with:
+    #     azcliversion: 2.63.0
+    #     inlineScript: |
+    #       az account show --output table
+    #       az deployment group create \
+    #         --resource-group ps-dw-ua-rg \
+    #         --template-file "./lakehouse/common-config/databricks_access_connector.bicep" \
+    #         --parameters "./lakehouse/environments/ua/_parameters.ua.json" \
+    #         --parameters "./lakehouse/environments/ua/_parameters.databricks_access_connector.json" \
+    #         --name ps-dw-ua-conn-dbx \
+    #         --mode Incremental
 
 # - name: DataBricks PROD Access Connector
 #       uses: azure/cli@v2
