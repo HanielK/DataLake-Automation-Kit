@@ -28,107 +28,148 @@
 #       - main
 
 
+
 name: Deploy Infrastructure
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+    inputs:
+      TargetDeploymentEnvironment:
+        description: 'Choose the deployment environment'
+        required: true
+        default: DEV
+        type: choice
+        options:
+          - DEV
+          - UA
+          - PROD
 
 jobs:
-
-  build-and-deploy:
+  deploy_to_DEV:
     runs-on: ubuntu-latest
+    environment: DEV
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v1
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        env:
+          TargetDeploymentEnvironment: DEV
 
-    - uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy BICEP Log Analytics Workspace
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |   
+      - name: Deploy Log Analytics Workspace
+        uses: azure/cli@v2
+        with:
+          azcliversion: 2.63.0
+          inlineScript: |   
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-sb-rg \
-              --template-file "./common-config/log_analytics_workspace.bicep" \
-              --parameters "./environments/sb/_parameters.sb.json" \
-              --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
-              --name ps-dw-sb-log \
+              --resource-group ps-dw-dv-rg \
+              --template-file "./lakehouse/common-config/log_analytics_workspace.bicep" \
+              --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+              --parameters "./lakehouse/environments/dv/_parameters.log_analytics_workspace.json" \
+              --name ps-dw-dv-log \
               --mode Incremental
-  
-    - name: Deploy BICEP Nat Gateway
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
+
+  deploy_to_UA:
+    runs-on: ubuntu-latest
+    environment: UA    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+        env:
+          TargetDeploymentEnvironment: UA
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Log Analytics Workspace
+        uses: azure/cli@v2
+        with:
+          azcliversion: 2.63.0
+          inlineScript: |   
             az account show --output table
             az deployment group create \
-              --resource-group ps-dw-sb-rg \
-              --template-file "./common-config/nat_gateway.bicep" \
-              --parameters "./environments//_sbparameters.sb.json" \
-              --parameters "./environments/sb/_parameters.nat_gateway.json" \
-              --name ps-dw-sb-nat \
+              --resource-group ps-dw-ua-rg \
+              --template-file "./lakehouse/common-config/log_analytics_workspace.bicep" \
+              --parameters "./lakehouse/environments/ua/_parameters.ua.json" \
+              --parameters "./lakehouse/environments/ua/_parameters.log_analytics_workspace.json" \
+              --name ps-dw-ua-log \
               --mode Incremental
-  
-    - name: Deploy Virtual Network
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-            az account show --output table
-            az deployment group create \
-              --resource-group ps-dw-sb-rg \
-              --template-file "./common-config/virtual_network.bicep" \
-              --parameters "./environments/sb/_parameters.sb.json" \
-              --parameters "./environments/sb/_parameters.virtual_network.json" \
-              --name ps-dw-sb-vnet \
-              --mode Incremental
+
+      # - name: Deploy Nat Gateway
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: 2.63.0
+      #     inlineScript: |
+      #       az account show --output table
+      #       az deployment group create \
+      #         --resource-group ps-dw-dv-rg \
+      #         --template-file "./lakehouse/common-config/nat_gateway.bicep" \
+      #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+      #         --parameters "./lakehouse/environments/dv/_parameters.nat_gateway.json" \
+      #         --name ps-dw-dv-nat \
+      #         --mode Incremental
+
+      # - name: Deploy Virtual Network
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: 2.63.0
+      #     inlineScript: |
+      #       az account show --output table
+      #       az deployment group create \
+      #         --resource-group ps-dw-dv-rg \
+      #         --template-file "./lakehouse/common-config/virtual_network.bicep" \
+      #         --parameters "./lakehouse/environments/dv/_parameters.dv.json" \
+      #         --parameters "./lakehouse/environments/dv/_parameters.virtual_network.json" \
+      #         --name ps-dw-dv-vnet \
+      #         --mode Incremental
+
+      # - name: Deploy Data Storage Account
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: 2.63.0
+      #     inlineScript: |
+      #         az account show --output table
+      #         az deployment group create \
+      #           --resource-group ps-dw-sb-rg \
+      #           --template-file "./common-config/storage_account_data.bicep" \
+      #           --parameters "./environments/sb/_parameters.sb.json" \
+      #           --parameters "./environments/sb/_parameters.storage_account_data.json" \
+      #           --name psdwsbstordata \
+      #           --mode Incremental
     
-    - name: Deploy Data Storage Account
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-            az account show --output table
-            az deployment group create \
-              --resource-group ps-dw-sb-rg \
-              --template-file "./common-config/storage_account_data.bicep" \
-              --parameters "./environments/sb/_parameters.sb.json" \
-              --parameters "./environments/sb/_parameters.storage_account_data.json" \
-              --name psdwsbstordata \
-              --mode Incremental
+      # - name: Deploy Meta Storage Account
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: 2.63.0
+      #     inlineScript: |
+      #         az account show --output table
+      #         az deployment group create \
+      #           --resource-group ps-dw-sb-rg \
+      #           --template-file "./common-config/storage_account_metastore.bicep" \
+      #           --parameters "./environments/sb/_parameters.sb.json" \
+      #           --parameters "./environments/sb/_parameters.storage_account_metastore.json" \
+      #           --name psdwsbstormeta \
+      #           --mode Incremental
+      
+      # - name: Deploy Key Vault
+      #   uses: azure/cli@v2
+      #   with:
+      #     azcliversion: 2.63.0
+      #     inlineScript: |
+      #         az account show --output table
+      #         az deployment group create \
+      #           --resource-group ps-dw-sb-rg \
+      #           --template-file "./common-config/key_vault.bicep" \
+      #           --parameters "./environments/sb/_parameters.sb.json" \
+      #           --parameters "./environments/sb/_parameters.key_vault.json" \
+      #           --name ps-dw-sb-kv \
+      #           --mode Incremental
     
-    - name: Deploy Meta Storage Account
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-            az account show --output table
-            az deployment group create \
-              --resource-group ps-dw-sb-rg \
-              --template-file "./common-config/storage_account_metastore.bicep" \
-              --parameters "./environments/sb/_parameters.sb.json" \
-              --parameters "./environments/sb/_parameters.storage_account_metastore.json" \
-              --name psdwsbstormeta \
-              --mode Incremental
-    
-    - name: Deploy Key Vault
-      uses: azure/cli@v2
-      with:
-        azcliversion: 2.63.0
-        inlineScript: |
-            az account show --output table
-            az deployment group create \
-              --resource-group ps-dw-sb-rg \
-              --template-file "./common-config/key_vault.bicep" \
-              --parameters "./environments/sb/_parameters.sb.json" \
-              --parameters "./environments/sb/_parameters.key_vault.json" \
-              --name ps-dw-sb-kv \
-              --mode Incremental
-        
+   
 
 # **********************************************************************************************************
 #  Note...Seperate yml (ps-dw-dbx-wrkspace-cli-infra.)  to deploy databrcicks workspaces/ access connectors

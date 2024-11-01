@@ -12,6 +12,18 @@ variables:
     value: ps-dw-dv-svcpri-dev
 
 
+# **************************************************************************
+#  Infra GitHub worflow Configuration
+# **************************************************************************
+      #  az account show --output table
+      #       az deployment group create \
+      #         --resource-group ps-dw-sb-rg \
+      #         --template-file "./common-config/log_analytics_workspace.bicep" \
+      #         --parameters "./environments/sb/_parameters.sb.json" \
+      #         --parameters "./environments/sb/_parameters.log_analytics_workspace.json" \
+      #         --name ps-dw-sb-log \
+      #         --mode Incremental
+
 # variables:
 parameters:
 - name: environmentName
@@ -20,6 +32,19 @@ parameters:
 - name: resourceGroup
   type: string
   default: 'ps-dw-dv-rg' #Enter the resource group name
+- name: templatefile
+  type: string
+  default: './lakehouse/common-config/log_analytics_workspace.bicep' #Enter the path for bicep file
+- name: commonparam
+  type: string
+  default: '/lakehouse/environments/dv/_parameters.dv.json' #Enter the path forcommon paraameters
+- name: resourcename
+- name: logparam
+  type: string
+  default: './lakehouse/environments/dv/_parameters.log_analytics_workspace.json' #Enter he path for log_analytics_workspace paraameters
+- name: resourcename
+  type: string
+  default: 'ps-dw-dv-log' #Enter the resource name
 - name: aclGroupAdmins
   type: string
   default: 'ACL-SCS-DATABRICKS-admins' #Enter the ACL group name for the admins,Provided value is a default value
